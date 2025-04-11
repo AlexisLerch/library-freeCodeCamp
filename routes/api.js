@@ -66,10 +66,13 @@ module.exports = function (app) {
     })
     
     .delete(async (req, res) => {
+      // Elimina todos los libros de la base de datos y devuelve un mensaje de éxito.
       try {
+        // Elimina todos los libros de la base de datos
         await Book.deleteMany({});
         res.send('complete delete successful');
       } catch (error) {
+        // Maneja errores inesperados al eliminar
         res.status(500).send('internal server error');
       }
     });
@@ -81,10 +84,14 @@ module.exports = function (app) {
       let bookid = req.params.id;
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
       try {
+        // Busca el libro por su ID y devuelve el libro con su título y comentarios.
         const book = await Book.findById(bookid);
+
+        // Si no se encuentra el libro, devuelve un error 404 y un mensaje de error.
         if (!book) {
           return res.send('no book exists');
         }
+        // Devuelve el libro encontrado y su título y comentarios.
         res.json({ _id: book._id, title: book.title, comments: book.comments, commentcount: book.comments.length });
       } catch (error) {
         // Maneja errores inesperados al buscar el libro
@@ -129,14 +136,15 @@ module.exports = function (app) {
 
     .delete(async (req, res) => {
       const bookid = req.params.id;
-    
+      // json res format same as .get
+      // Verifica si se proporcionó el ID del libro
       try {
         const deleted = await Book.findByIdAndDelete(bookid);
-    
+        // Si no se encuentra el libro, devuelve un error 404 y un mensaje de error.
         if (!deleted) {
           return res.send('no book exists');
         }
-    
+        // Si se encuentra y elimina el libro, devuelve un mensaje de éxito.
         res.send('delete successful');
       } catch (error) {
         res.status(500).send('internal server error');
